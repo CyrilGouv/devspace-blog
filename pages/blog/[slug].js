@@ -4,8 +4,6 @@ import matter from 'gray-matter'
 
 export default function PostPage({ frontmatter: { title, category, content, slug, date, conver_image, author, author_image }, content, slug }) {
 
-    
-
     return (
         <div>
             
