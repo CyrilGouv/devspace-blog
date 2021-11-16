@@ -4,23 +4,31 @@ import Layout from "@/components/Layout"
 import Post from '@/components/Post'
 import { POST_PER_PAGE } from '@/config/index'
 import Pagination from '@/components/Pagination'
+import CategoryList from '@/components/CategoryList'
 import { getPosts } from '@/lib/posts'
 
-export default function BlogPage({ posts, numPages, currentPage }) {
+export default function BlogPage({ posts, numPages, currentPage, categories }) {
 
   return (
     <Layout>
-      <h1 className="text-5xl border-b-4 p-5 font-blod">Latest Posts</h1>
-    
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-        {
-          posts.map((post, index) => (
-            <Post key={ index } post={ post } />
-          ))
-        }
-      </div>
+      <div className="flex justify-between">
+        <div className="w-3/4 mr-10">
+          <h1 className="text-5xl border-b-4 p-5 font-blod">Blog</h1>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {
+              posts.map((post, index) => (
+                <Post key={ index } post={ post } />
+              ))
+            }
+          </div>
 
-      <Pagination currentPage={ currentPage } numPages={ numPages } />
+          <Pagination currentPage={ currentPage } numPages={ numPages } />
+        </div>
+
+        <div className="w-1/4">
+            <CategoryList categories={ categories } />
+        </div>
+      </div>
     </Layout>
   )
 }
@@ -53,6 +61,10 @@ export async function getStaticProps({ params }) {
   
     const posts = getPosts()
 
+    // Get Categories for sidebar
+    const categories = posts.map(post => post.frontmatter.category)
+    const uniqCategories = [...new Set(categories)]
+
     const numPages = Math.ceil(files.length / POST_PER_PAGE)
     const pageIndex = page - 1
     const orderedPosts = posts.slice(pageIndex * POST_PER_PAGE, (pageIndex + 1) * POST_PER_PAGE)
@@ -61,7 +73,8 @@ export async function getStaticProps({ params }) {
         props: {
             posts: orderedPosts,
             numPages,
-            currentPage: page
+            currentPage: page,
+            categories: uniqCategories
         }
     }
 }
